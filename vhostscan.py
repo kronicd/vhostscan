@@ -82,4 +82,4 @@ for chunk in chunks(uris, num_threads):
     threads.append(t)
     t.start()
 
-file.close()
+logFile.close()
