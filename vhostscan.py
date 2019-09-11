@@ -3,6 +3,9 @@ import requests
 import threading
 import time
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("target_ips", help="file containing IP addresses to target")
 parser.add_argument("target_domains", help="file containing vhosts to test")
@@ -11,9 +14,9 @@ args = parser.parse_args()
 
 ## varibles for tweaking
 protolols = ["http://", "https://"]
-num_threads = 10;
+num_threads = 10
 request_delay = 0.01 # time to sleep (seconds) between requests in each thread
-
+timeout = 2
 
 ## Class/thinger
 class uri_class(object):
@@ -48,7 +51,7 @@ except:
 	exit()
 
 try:
-	logFile  = open(args.log_file, "w", 0)
+	logFile  = open(args.log_file, "w")
 except:
 	print("Unable to open log file for output")
 	exit()
@@ -58,7 +61,7 @@ def worker(scan_uris):
 	for uri in scan_uris:
 		time.sleep(request_delay)
 		try:
-			result = requests.get(uri.proto+uri.ip, headers={'host': uri.domain})
+			result = requests.get(uri.proto+uri.ip, headers={'host': uri.domain}, timeout=timeout)
 			if result.status_code != 404:
 				print("IP: " +uri.ip +" URL: " + uri.proto+uri.domain + " Status: " + str(result.status_code))
 				logFile.write("IP: " +uri.ip +" URL: " + uri.proto+uri.domain + " Status: " + str(result.status_code)+"\n")
