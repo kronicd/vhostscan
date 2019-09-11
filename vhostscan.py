@@ -68,8 +68,11 @@ def worker(scan_uris):
 		except requests.exceptions.ConnectionError:
 			pass
 			#print("Could not connect to: " +uri.proto+uri.ip)
+		except requests.exceptions.ReadTimeout:
+			pass
+			#print("Could not connect to: " +uri.proto+uri.ip)
 		except:
-			print("Something else went wrong idk: " +uri.proto+uri.ip+" " + uri.domain)
+			print("Something else went wrong -- IP: " +uri.ip +" URL: " + uri.proto+uri.domain)
 	return
 
 uris = []
@@ -84,5 +87,3 @@ for chunk in chunks(uris, num_threads):
     t = threading.Thread(target=worker, args=(chunk,))
     threads.append(t)
     t.start()
-
-logFile.close()
